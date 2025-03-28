@@ -1,0 +1,143 @@
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { motion } from "framer-motion";
+import Calendar from "react-calendar";
+import 'react-calendar/dist/Calendar.css';
+
+export default function StaffingPage() {
+  const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [workerForm, setWorkerForm] = useState({ name: "", email: "", experience: "", cv: null });
+  const [date, setDate] = useState(new Date());
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleWorkerChange = (e) => {
+    if (e.target.name === "cv") {
+      setWorkerForm({ ...workerForm, cv: e.target.files[0] });
+    } else {
+      setWorkerForm({ ...workerForm, [e.target.name]: e.target.value });
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    window.location.href = `mailto:scottjuliander05@gmail.com?subject=Bokningsförfrågan&body=Namn: ${form.name}%0AEmail: ${form.email}%0AMeddelande: ${form.message}`;
+  };
+
+  const handleWorkerSubmit = (e) => {
+    e.preventDefault();
+    alert("Tack för din registrering! Vi kontaktar dig vid behov.");
+    const emailBody = `Namn: ${workerForm.name}%0AEmail: ${workerForm.email}%0AErfarenhet: ${workerForm.experience}`;
+    window.location.href = `mailto:scottjuliander05@gmail.com?subject=Registrering som arbetare&body=${emailBody}`;
+  };
+
+  return (
+    <div className="p-10 bg-gray-100 min-h-screen">
+      <motion.h1 
+        className="text-3xl font-bold text-center mb-6"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        Bemanning för Barer, Restauranger & Evenemang
+      </motion.h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card>
+          <CardContent className="p-6">
+            <h2 className="text-xl font-semibold mb-4">Våra Tjänster</h2>
+            <ul className="list-disc pl-4 space-y-2">
+              <li>Barpersonal för nattklubbar och barer</li>
+              <li>Serveringspersonal för restauranger</li>
+              <li>Event- och festivalbemanning</li>
+              <li>Bröllopsservice och cateringpersonal</li>
+            </ul>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6">
+            <h2 className="text-xl font-semibold mb-4">Kontakta oss</h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <Input 
+                type="text" 
+                name="name" 
+                placeholder="Ditt namn" 
+                value={form.name} 
+                onChange={handleChange} 
+                required 
+              />
+              <Input 
+                type="email" 
+                name="email" 
+                placeholder="Din e-post" 
+                value={form.email} 
+                onChange={handleChange} 
+                required 
+              />
+              <Textarea 
+                name="message" 
+                placeholder="Berätta vad du behöver hjälp med..." 
+                value={form.message} 
+                onChange={handleChange} 
+                required 
+              />
+              <Button type="submit" className="w-full">Skicka Förfrågan</Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+      
+      {/* Bokningssystem */}
+      <Card className="mt-6">
+        <CardContent className="p-6">
+          <h2 className="text-xl font-semibold mb-4">Boka Personal</h2>
+          <Calendar onChange={setDate} value={date} />
+          <p className="mt-4">Valt datum: {date.toDateString()}</p>
+        </CardContent>
+      </Card>
+      
+      {/* Registrering för arbetare */}
+      <Card className="mt-6">
+        <CardContent className="p-6">
+          <h2 className="text-xl font-semibold mb-4">Registrera dig som arbetare</h2>
+          <form onSubmit={handleWorkerSubmit} className="space-y-4">
+            <Input 
+              type="text" 
+              name="name" 
+              placeholder="Ditt namn" 
+              value={workerForm.name} 
+              onChange={handleWorkerChange} 
+              required 
+            />
+            <Input 
+              type="email" 
+              name="email" 
+              placeholder="Din e-post" 
+              value={workerForm.email} 
+              onChange={handleWorkerChange} 
+              required 
+            />
+            <Textarea 
+              name="experience" 
+              placeholder="Beskriv din erfarenhet inom bar- och serveringsbranschen..." 
+              value={workerForm.experience} 
+              onChange={handleWorkerChange} 
+              required 
+            />
+            <Input 
+              type="file" 
+              name="cv" 
+              accept=".pdf,.doc,.docx" 
+              onChange={handleWorkerChange} 
+              required 
+            />
+            <Button type="submit" className="w-full">Registrera dig</Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
